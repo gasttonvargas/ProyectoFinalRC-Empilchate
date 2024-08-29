@@ -1,14 +1,16 @@
+// App.js o main.jsx
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import NavbarComponent from './components/NavbarR';
 
-const App = () => {
+function App() {
   return (
-    <>
-      <NavbarComponent />
-      <div className="container mt-4">
+    <Router>
+      <div className="App">
+        <NavbarComponent />
       </div>
-    </>
+    </Router>
   );
-};
+}
 
 export default App;
