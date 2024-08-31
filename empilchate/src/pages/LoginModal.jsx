@@ -3,6 +3,7 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { Link } from 'react-router-dom';
+import '../assets/LoginModal.css'
 
 const LoginModal = ({ show, handleClose }) => {
   const [email, setEmail] = useState('');
@@ -20,11 +21,11 @@ const LoginModal = ({ show, handleClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+    <Modal show={show} onHide={handleClose} centered className="login-modal">
+      <Modal.Header closeButton className="login-modal-header">
         <Modal.Title>Iniciar Sesión</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="login-modal-body">
         {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -47,16 +48,17 @@ const LoginModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit" className="w-100">
+          <Button variant="primary" type="submit" className="w-100 login-button">
             Iniciar Sesión
           </Button>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Link to="/recuperarpass">¿Olvidaste tu contraseña?</Link>
+      <Modal.Footer className="login-modal-footer">
+        <Link to="/recuperarpass" className="forgot-password-link">¿Olvidaste tu contraseña?</Link>
       </Modal.Footer>
     </Modal>
   );
 };
+
 
 export default LoginModal;

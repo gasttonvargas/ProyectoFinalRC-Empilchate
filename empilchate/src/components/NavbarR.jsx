@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Badge, Dropdown, Button } from 'react-bootstrap';
-import { FaHeart, FaShoppingCart, FaQuestionCircle, FaBars, FaFire, FaUser, FaSignInAlt, FaUserPlus, FaCog } from 'react-icons/fa';
+import { Navbar, Nav, Container, Badge, Dropdown, Modal, Button, Form, FormControl } from 'react-bootstrap';
+import { FaHome, FaShoppingCart, FaBars, FaUser, FaSearch, FaUserShield } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -10,13 +10,15 @@ import RegisterModal from '../pages/RegisterModal';
 import '../assets/NavbarR.css';
 import logo from '../assets/img/logo.png';
 
-const NavbarComponent = () => {
+const NavbarComponent = ({ onSwitchToAdmin }) => {
   const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [favoritesCount, setFavoritesCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,21 +29,28 @@ const NavbarComponent = () => {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           const userData = userDoc.data();
           setIsAdmin(userData?.role === 'admin');
-          setCartCount(3); // Ejemplo, deberías obtener el conteo real del carrito
-          setFavoritesCount(2); // Ejemplo, deberías obtener el conteo real de favoritos
+          setUserName(userData?.firstName || '');
+          const cartItemCount = await getCartItemCount(currentUser.uid);
+          setCartCount(cartItemCount);
         } catch (error) {
           console.error("Error al obtener el documento del usuario:", error);
         }
       } else {
         setUser(null);
         setIsAdmin(false);
+        setUserName('');
         setCartCount(0);
-        setFavoritesCount(0);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const getCartItemCount = async (userId) => {
+    // Implementa la lógica para obtener el conteo real del carrito
+    // Por ahora, retornamos un valor de ejemplo
+    return 3;
+  };
 
   const handleLogout = async () => {
     try {
@@ -52,19 +61,59 @@ const NavbarComponent = () => {
     }
   };
 
+  const handleCartClick = () => {
+    if (user) {
+      navigate('/carrito');
+    } else {
+      setShowCartModal(true);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Implementa la lógica de búsqueda aquí
+    console.log('Búsqueda:', searchTerm);
+    // Ejemplo: navigate(`/search?q=${searchTerm}`);
+  };
+
+  const handleAdminClick = () => {
+    if (onSwitchToAdmin) {
+      onSwitchToAdmin();
+    }
+  };
+
   return (
     <>
       <Navbar className="navbar-custom" expand="lg" sticky="top">
-        <Container>
+        <Container fluid className="d-flex justify-content-between align-items-center">
           <Navbar.Brand as={Link} to="/">
             <img src={logo} alt="Logo" className="navbar-logo" />
           </Navbar.Brand>
+          
+          <Form className="d-flex d-lg-none mx-2 flex-grow-1" onSubmit={handleSearch}>
+            <FormControl 
+              type="search" 
+              placeholder="Buscar" 
+              className="mr-2" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button variant="outline-light" type="submit"><FaSearch /></Button>
+          </Form>
+          
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
-            <Nav className="mx-auto">
+            <Nav className="mx-auto text-center">
+              <Nav.Link as={Link} to="/" className="nav-button">
+                <FaHome className="me-2"/> <span className="nav-text">Inicio</span>
+              </Nav.Link>
+              <Nav.Link as={Link} to="/about" className="nav-button">
+                <span className="nav-text">Contacto</span>
+              </Nav.Link>
               <Dropdown>
-                <Dropdown.Toggle variant="link" id="dropdown-basic">
-                  <FaBars /> Categorías
+                <Dropdown.Toggle as="div" id="dropdown-basic" className="nav-button">
+                  <FaBars className="me-2" /> <span className="nav-text">Categorías</span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item as={Link} to="/categoria/camisetas">Camisetas</Dropdown.Item>
@@ -73,49 +122,67 @@ const NavbarComponent = () => {
                   <Dropdown.Item as={Link} to="/categoria/accesorios">Accesorios</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-              <Nav.Link as={Link} to="/destacado">Lo más <FaFire /></Nav.Link>
-              <Nav.Link as={Link} to="/about">Contacto</Nav.Link>
-              <Nav.Link as={Link} to="/favoritos">
-                <FaHeart /> {favoritesCount > 0 && <Badge bg="danger">{favoritesCount}</Badge>}
-              </Nav.Link>
-              <Nav.Link as={Link} to="/carrito">
+              <Nav.Link onClick={handleCartClick} className="nav-button">
                 <FaShoppingCart /> {cartCount > 0 && <Badge bg="danger">{cartCount}</Badge>}
               </Nav.Link>
             </Nav>
-          </Navbar.Collapse>
-          <Nav>
-            {user ? (
+            
+            <div className="d-flex align-items-center">
+              {isAdmin && (
+                <Button 
+                  variant="warning" 
+                  className="me-2" 
+                  onClick={handleAdminClick}
+                >
+                  <FaUserShield className="me-1" /> Admin
+                </Button>
+              )}
               <Dropdown>
-                <Dropdown.Toggle variant="outline-light" id="dropdown-user">
-                  <FaUser /> {user.email}
+                <Dropdown.Toggle variant="link" id="dropdown-user" className="nav-button" style={{ textDecoration: 'none' }}>
+                  <FaUser className="me-2" /> <span className="nav-text">{userName || ''}</span>
                 </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item as={Link} to="/profile">Perfil</Dropdown.Item>
-                  {isAdmin && (
-                    <Dropdown.Item as={Link} to="/admin-dashboard">
-                      <FaCog /> Panel de Admin
-                    </Dropdown.Item>
+                <Dropdown.Menu align="end">
+                  {user ? (
+                    <>
+                      <Dropdown.Item as={Link} to="/profile">Perfil</Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Item onClick={handleLogout}>Cerrar Sesión</Dropdown.Item>
+                    </>
+                  ) : (
+                    <>
+                      <Dropdown.Item onClick={() => setShowLoginModal(true)}>Iniciar Sesión</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setShowRegisterModal(true)}>Registrarse</Dropdown.Item>
+                    </>
                   )}
-                  <Dropdown.Divider />
-                  <Dropdown.Item onClick={handleLogout}>Cerrar Sesión</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-            ) : (
-              <>
-                <Button variant="outline-light" onClick={() => setShowLoginModal(true)} className="me-2">
-                  <FaSignInAlt /> Iniciar Sesión
-                </Button>
-                <Button variant="light" onClick={() => setShowRegisterModal(true)}>
-                  <FaUserPlus /> Registrarse
-                </Button>
-              </>
-            )}
-          </Nav>
+            </div>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
 
       <LoginModal show={showLoginModal} handleClose={() => setShowLoginModal(false)} />
       <RegisterModal show={showRegisterModal} handleClose={() => setShowRegisterModal(false)} />
+
+      <Modal show={showCartModal} onHide={() => setShowCartModal(false)} className="cart-modal">
+        <Modal.Header closeButton className="cart-modal-header">
+          <Modal.Title>Carrito</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="cart-modal-body">
+          No has iniciado sesión. ¡Compra ya!
+        </Modal.Body>
+        <Modal.Footer className="cart-modal-footer">
+          <Button variant="outline-secondary" onClick={() => setShowCartModal(false)}>
+            Cerrar
+          </Button>
+          <Button variant="primary" onClick={() => {
+            setShowCartModal(false);
+            setShowLoginModal(true);
+          }}>
+            Iniciar Sesión
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

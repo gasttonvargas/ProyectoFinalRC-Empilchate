@@ -1,132 +1,44 @@
-import "../assets/font.css";
-import "../assets/navbarr.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavLink, useLocation } from "react-router-dom";
-import { Nav, Navbar, NavDropdown, Badge } from "react-bootstrap";
+import React from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { FaUsers, FaBox, FaUserEdit, FaArrowLeft } from 'react-icons/fa';
+import '../assets/NavbarAdmin.css'
 
-const title = <FontAwesomeIcon icon="user"></FontAwesomeIcon>;
+const NavbarAdmin = ({ onSwitchToUser }) => {
+  const navigate = useNavigate();
 
-export default function NavbarR({ userName, logOut, cantidadCarrito }) {
-  const location = useLocation();
-  const { pathname } = location;
-  if (pathname.includes("/admin")) return null;
+  const handleSwitchToUser = () => {
+    onSwitchToUser();
+    navigate('/'); // Navega a la página principal
+  };
+
   return (
-    <Navbar className="px-2 navbar-admin" variant="dark" expand="lg">
-      <Navbar.Brand as={NavLink} to="/">
-        <FontAwesomeIcon
-          className="apple-icon"
-          icon={["fab", "apple"]}
-        ></FontAwesomeIcon>
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mx-auto">
-          <Nav.Link
-            className="mx-3 navstyle navstyle-mac"
-            to="Mac"
-            as={NavLink}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon={["fas", "desktop"]}
-            ></FontAwesomeIcon>
-            iMac
-          </Nav.Link>
-          <Nav.Link
-            className="mx-3 navstyle navstyle-ipad"
-            to="iPad"
-            as={NavLink}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon={["fas", "tablet-alt"]}
-            ></FontAwesomeIcon>
-            iPad
-          </Nav.Link>
-          <Nav.Link
-            className="mx-3 navstyle navstyle-iphone"
-            to="iPhone"
-            as={NavLink}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon={["fas", "mobile-alt"]}
-            ></FontAwesomeIcon>
-            iPhone
-          </Nav.Link>
-          <Nav.Link
-            className="mx-3 navstyle navstyle-about"
-            to="about"
-            as={NavLink}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon={["fas", "users"]}
-            ></FontAwesomeIcon>
-            About Us
-          </Nav.Link>
-          <Nav.Link
-            className="mx-3 navstyle navstyle-admin"
-            to="admin/admin-productos"
-            as={NavLink}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon={["fas", "user"]}
-            ></FontAwesomeIcon>
-            Admin
-          </Nav.Link>
-          {!userName && (
-            <>
-              <NavDropdown
-                className="bag-icon mx-3"
-                title={title}
-                id="basic-nav-dropdown"
-              >
-                <NavDropdown.Item to="login" as={NavLink}>
-                  Cuenta
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item to="register" as={NavLink}>
-                  Registrarse
-                </NavDropdown.Item>
-              </NavDropdown>
-            </>
-          )}
-          {userName && (
-            <NavDropdown className="user-button-admin ml-2" title={userName}>
-              <NavDropdown.Item
-                to="/perfil"
-                className="drop-profile-button-admin"
-                as={NavLink}
-              >
-                Ver perfil
-              </NavDropdown.Item>
-              <NavDropdown.Item
-                to="/"
-                as={NavLink}
-                onClick={logOut}
-                className="drop-profile-button-admin"
-                activeClassName="none"
-              >
-                Cerrar Sesión
-              </NavDropdown.Item>
-            </NavDropdown>
-          )}
-          <Nav.Link
-            to="/carrito"
-            as={NavLink}
-            className="navstyle-shopcart text-left"
-          >
-            <FontAwesomeIcon
-              className="shoppingCart"
-              icon={["fas", "shopping-cart"]}
-            ></FontAwesomeIcon>
-            <Badge variant="light">{cantidadCarrito}</Badge>
-            <span className="sr-only">unread messages</span>
-          </Nav.Link>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
+    <>
+      <Navbar expand="lg" className="dashboard-navbar">
+        <Container>
+          <Navbar.Brand as={Link} to="/admin-dashboard">Panel de Administración</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/admin-dashboard/products">
+                <FaBox className="me-2" /> Productos
+              </Nav.Link>
+              <Nav.Link as={Link} to="/admin-dashboard/users">
+                <FaUserEdit className="me-2" /> Usuarios
+              </Nav.Link>
+              <Nav.Link as={Link} to="/admin-dashboard/manage">
+                <FaUsers className="me-2" /> Gestionar Admins
+              </Nav.Link>
+            </Nav>
+            <Button variant="outline-light" onClick={handleSwitchToUser}>
+              <FaArrowLeft className="me-2" /> Volver a Usuario
+            </Button>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <Outlet />
+    </>
   );
-}
+};
+
+export default NavbarAdmin;

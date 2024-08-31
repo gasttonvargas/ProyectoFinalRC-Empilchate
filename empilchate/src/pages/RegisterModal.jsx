@@ -3,8 +3,11 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
+import '../assets/RegisterModal.css'; 
 
 const RegisterModal = ({ show, handleClose }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,14 +20,14 @@ const RegisterModal = ({ show, handleClose }) => {
       return;
     }
     try {
-      // Crear el usuario en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Guardar información adicional del usuario en Firestore
       await setDoc(doc(db, "users", user.uid), {
+        firstName: firstName,
+        lastName: lastName,
         email: user.email,
-        role: "user" // Por defecto, los nuevos usuarios son "user"
+        role: "user"
       });
 
       handleClose();
@@ -34,13 +37,33 @@ const RegisterModal = ({ show, handleClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+    <Modal show={show} onHide={handleClose} centered className="register-modal">
+      <Modal.Header closeButton className="register-modal-header">
         <Modal.Title>Registrarse</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="register-modal-body">
         {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Nombre</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingresa tu nombre"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Apellido</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingresa tu apellido"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -71,7 +94,7 @@ const RegisterModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit" className="w-100">
+          <Button variant="primary" type="submit" className="w-100 register-button">
             Registrarse
           </Button>
         </Form>
