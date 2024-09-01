@@ -1,0 +1,15 @@
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    transition: transform 0.2s;
+  }
+  
+  .product-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .img-fluid {
+    max-height: 150px;
+    object-fit: cover;
+  }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Badge, Dropdown, Modal, Button, Form, FormControl } from 'react-bootstrap';
-import { FaHome, FaShoppingCart, FaBars, FaUser, FaSearch, FaUserShield } from 'react-icons/fa';
+import { FaHome, FaShoppingCart, FaBars, FaUser, FaSearch, FaUserShield, FaHeart } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -15,6 +15,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
   const [userName, setUserName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
@@ -29,9 +30,13 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           const userData = userDoc.data();
           setIsAdmin(userData?.role === 'admin');
-          setUserName(userData?.firstName || '');
+          setUserName(userData?.firstName && userData?.lastName 
+            ? `${userData.firstName} ${userData.lastName}`
+            : userData?.firstName || userData?.lastName || '');
           const cartItemCount = await getCartItemCount(currentUser.uid);
           setCartCount(cartItemCount);
+          const favoritesItemCount = await getFavoritesCount(currentUser.uid);
+          setFavoritesCount(favoritesItemCount);
         } catch (error) {
           console.error("Error al obtener el documento del usuario:", error);
         }
@@ -40,17 +45,14 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
         setIsAdmin(false);
         setUserName('');
         setCartCount(0);
+        setFavoritesCount(0);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  const getCartItemCount = async (userId) => {
-    // Implementa la lógica para obtener el conteo real del carrito
-    // Por ahora, retornamos un valor de ejemplo
-    return 3;
-  };
+
 
   const handleLogout = async () => {
     try {
@@ -69,6 +71,14 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
     }
   };
 
+  const handleFavoritesClick = () => {
+    if (user) {
+      navigate('/favoritos');
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     // Implementa la lógica de búsqueda aquí
@@ -81,6 +91,16 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
       onSwitchToAdmin();
     }
   };
+
+  const categories = [
+    { name: 'Buzos', path: '/category/buzos' },
+    { name: 'Remerones', path: '/category/remerones' },
+    { name: 'Remeras y Boxy', path: '/category/remeras-y-boxy' },
+    { name: 'Crop', path: '/category/crop' },
+    { name: 'Camisas', path: '/category/camisas' },
+    { name: 'Camperas', path: '/category/camperas' },
+    { name: 'Pantalones', path: '/category/pantalones' },
+  ];
 
   return (
     <>
@@ -112,16 +132,22 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
                 <span className="nav-text">Contacto</span>
               </Nav.Link>
               <Dropdown>
-                <Dropdown.Toggle as="div" id="dropdown-basic" className="nav-button">
-                  <FaBars className="me-2" /> <span className="nav-text">Categorías</span>
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item as={Link} to="/categoria/camisetas">Camisetas</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/categoria/pantalones">Pantalones</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/categoria/zapatillas">Zapatillas</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/categoria/accesorios">Accesorios</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+  <Dropdown.Toggle as="div" id="dropdown-basic" className="nav-button">
+    <FaBars className="me-2" /> <span className="nav-text">Categorías</span>
+  </Dropdown.Toggle>
+  <Dropdown.Menu>
+    {categories.map((category, index) => (
+      <Dropdown.Item key={index} as={Link} to={category.path}>
+        {category.name}
+      </Dropdown.Item>
+    ))}
+  </Dropdown.Menu>
+</Dropdown>
+              {user && (
+                <Nav.Link onClick={handleFavoritesClick} className="nav-button">
+                  <FaHeart /> {favoritesCount > 0 && <Badge bg="danger">{favoritesCount}</Badge>}
+                </Nav.Link>
+              )}
               <Nav.Link onClick={handleCartClick} className="nav-button">
                 <FaShoppingCart /> {cartCount > 0 && <Badge bg="danger">{cartCount}</Badge>}
               </Nav.Link>
@@ -139,7 +165,10 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
               )}
               <Dropdown>
                 <Dropdown.Toggle variant="link" id="dropdown-user" className="nav-button" style={{ textDecoration: 'none' }}>
-                  <FaUser className="me-2" /> <span className="nav-text">{userName || ''}</span>
+                  <FaUser className="me-2" /> 
+                  <span className="nav-text">
+                    {user ? (userName || 'Usuario') : 'Iniciar Sesión'}
+                  </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end">
                   {user ? (
@@ -169,6 +198,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
           <Modal.Title>Carrito</Modal.Title>
         </Modal.Header>
         <Modal.Body className="cart-modal-body">
+          Tu carrito de compras está vacío.
           No has iniciado sesión. ¡Compra ya!
         </Modal.Body>
         <Modal.Footer className="cart-modal-footer">

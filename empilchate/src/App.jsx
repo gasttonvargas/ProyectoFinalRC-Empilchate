@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { CartProvider } from './contexts/CartContext';
 import NavbarComponent from './components/NavbarR';
 import NavbarAdmin from './components/NavbarAdmin';
 import HomePage from './pages/HomePage';
@@ -27,41 +28,44 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        {showAdminNav ? (
-          <NavbarAdmin onSwitchToUser={handleSwitchToUser} />
-        ) : (
-          <NavbarComponent onSwitchToAdmin={handleSwitchToAdmin} />
-        )}
-        <Routes>
-          {/* Rutas públicas */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
+    <CartProvider>
+      <Router>
+        <div className="App">
+          {showAdminNav ? (
+            <NavbarAdmin onSwitchToUser={handleSwitchToUser} />
+          ) : (
+            <NavbarComponent onSwitchToAdmin={handleSwitchToAdmin} />
+          )}
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/category/:categoryName" element={<ProductsPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
 
-          {/* Rutas de administrador */}
-          <Route 
-            path="/admin-dashboard/*" 
-            element={
-              showAdminNav ? (
-                <Routes>
-                  <Route index element={<Dashboard />} />
-                  <Route path="products" element={<Products />} />
-                  <Route path="users" element={<Users />} />
-                  <Route path="manage" element={<AdminDashboard />} />
-                </Routes>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            } 
-          />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+            {/* Rutas de administrador */}
+            <Route 
+              path="/admin-dashboard/*" 
+              element={
+                showAdminNav ? (
+                  <Routes>
+                    <Route index element={<Dashboard />} />
+                    <Route path="products" element={<Products />} />
+                    <Route path="users" element={<Users />} />
+                    <Route path="manage" element={<AdminDashboard />} />
+                  </Routes>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              } 
+            />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 
