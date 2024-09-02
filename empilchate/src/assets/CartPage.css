@@ -1,15 +1,85 @@
-.product-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    transition: transform 0.2s;
-  }
-  
-  .product-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .img-fluid {
-    max-height: 150px;
-    object-fit: cover;
-  }
+.checkout-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-group-item img {
+  width: 80px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.list-group-item h6 {
+  margin: 0;
+}
+
+.list-group-item .text-muted {
+  font-size: 0.9rem;
+}
+
+.btn-outline-secondary {
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+}
+
+.checkout-card .card-footer {
+  padding: 1rem;
+}
+
+.credit-card-form {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.credit-card-box {
+  background: linear-gradient(135deg, #00b4db, #0083b0);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-number {
+  font-size: 1.5em;
+  letter-spacing: 2px;
+}
+
+.card-name {
+  font-size: 1em;
+  text-transform: uppercase;
+}
+
+.card-expiry {
+  font-size: 0.9em;
+}
+
+.card-type {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2em;
+}
+
+.form-control {
+  border-radius: 0;
+}
+
+.btn-success {
+  border-radius: 0;
+}

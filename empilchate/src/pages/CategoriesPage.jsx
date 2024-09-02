@@ -3,6 +3,7 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import '../assets/CategoriesPage.css';
 
+
 const categories = [
   { id: 1, name: 'BUZOS', image: 'https://acdn.mitiendanube.com/stores/219/431/products/64323adc-66fc-412a-917d-94fc8e6e37bb-8a9086e60d7d0800ff17245119644733-640-0.webp' },
   { id: 2, name: 'REMERONES', image: 'https://acdn.mitiendanube.com/stores/219/431/products/1f5be5a8-6138-4ea9-9073-e10cf2407ebd-f083b20b7cd1a8689917245109140324-640-0.webp' },

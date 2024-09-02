@@ -52,8 +52,6 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
     return () => unsubscribe();
   }, []);
 
-
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -65,7 +63,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
 
   const handleCartClick = () => {
     if (user) {
-      navigate('/carrito');
+      navigate('/cart'); // Cambiado de '/carrito' a '/cart'
     } else {
       setShowCartModal(true);
     }
@@ -73,7 +71,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
 
   const handleFavoritesClick = () => {
     if (user) {
-      navigate('/favoritos');
+      navigate('/favorites'); // Cambiado de '/favoritos' a '/favorites'
     } else {
       setShowLoginModal(true);
     }
@@ -132,17 +130,17 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
                 <span className="nav-text">Contacto</span>
               </Nav.Link>
               <Dropdown>
-  <Dropdown.Toggle as="div" id="dropdown-basic" className="nav-button">
-    <FaBars className="me-2" /> <span className="nav-text">Categorías</span>
-  </Dropdown.Toggle>
-  <Dropdown.Menu>
-    {categories.map((category, index) => (
-      <Dropdown.Item key={index} as={Link} to={category.path}>
-        {category.name}
-      </Dropdown.Item>
-    ))}
-  </Dropdown.Menu>
-</Dropdown>
+                <Dropdown.Toggle as="div" id="dropdown-basic" className="nav-button">
+                  <FaBars className="me-2" /> <span className="nav-text">Categorías</span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {categories.map((category, index) => (
+                    <Dropdown.Item key={index} as={Link} to={category.path}>
+                      {category.name}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
               {user && (
                 <Nav.Link onClick={handleFavoritesClick} className="nav-button">
                   <FaHeart /> {favoritesCount > 0 && <Badge bg="danger">{favoritesCount}</Badge>}
