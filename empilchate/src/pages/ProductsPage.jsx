@@ -1,13 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '../contexts/CartContext';
+import '../assets/ProductsPage.css';
 
-// Función para generar un ID aleatorio
 const generateRandomId = () => Math.random().toString(36).substr(2, 9);
-
-// Función para generar un precio aleatorio entre 15 y 100
-const generateRandomPrice = () => (Math.random() * (85) + 15).toFixed(2);
+const generateRandomPrice = () => Number((Math.random() * (40000) + 10000).toFixed(2));
 
 const categories = [
   { name: 'Buzos', image: 'https://via.placeholder.com/300x400?text=Buzo' },
@@ -19,7 +18,6 @@ const categories = [
   { name: 'Pantalones', image: 'https://via.placeholder.com/300x400?text=Pantalon' },
 ];
 
-// Función para generar productos aleatorios
 const generateProducts = (category, count) => {
   return Array.from({ length: count }, (_, index) => ({
     id: generateRandomId(),
@@ -33,58 +31,88 @@ const generateProducts = (category, count) => {
 const ProductsPage = () => {
   const { categoryName } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
-
-  console.log('CategoryName:', categoryName);
+  const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const [favorites, setFavorites] = useState([]);
 
   const allProducts = useMemo(() => {
-    console.log('Generating all products');
     return categories.flatMap(category => generateProducts(category, 10));
   }, []);
 
   const categoryProducts = useMemo(() => {
-    console.log('Filtering products for category:', categoryName);
     return categoryName
       ? allProducts.filter(product => product.category === categoryName.toLowerCase())
       : allProducts;
   }, [categoryName, allProducts]);
 
-  console.log('Number of products:', categoryProducts.length);
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(storedFavorites);
+  }, []);
 
   const handleAddToCart = (product) => {
-    console.log('Adding to cart:', product);
     addToCart(product);
     alert(`${product.name} añadido al carrito`);
   };
 
   const handleBuyNow = (product) => {
-    console.log('Buying now:', product);
     addToCart(product);
     navigate('/cart');
   };
 
+  const handleUpdateQuantity = (productId, change) => {
+    const product = cart.find(item => item.id === productId);
+    if (product) {
+      const newQuantity = product.quantity + change;
+      if (newQuantity > 0) {
+        updateQuantity(productId, newQuantity);
+      } else {
+        removeFromCart(productId);
+      }
+    }
+  };
+
+  const toggleFavorite = (productId) => {
+    setFavorites(prevFavorites => {
+      const newFavorites = prevFavorites.includes(productId)
+        ? prevFavorites.filter(id => id !== productId)
+        : [...prevFavorites, productId];
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  };
+
   return (
-    <Container>
-      <h1 className="my-4">Productos {categoryName ? `en ${categoryName}` : ''}</h1>
+    <Container className="products-container">
+      <h1 className="my-4 text-center">{categoryName ? `${categoryName}` : 'Todos los Productos'}</h1>
       <Row>
         {categoryProducts.length > 0 ? (
           categoryProducts.map((product) => (
             <Col key={product.id} md={3} className="mb-4">
-              <Card className="h-100">
-                <Card.Img variant="top" src={product.image} alt={product.name} />
+              <Card className="product-card h-100">
+                <div className="product-image-container">
+                  <Card.Img variant="top" src={product.image} alt={product.name} />
+                  <Button 
+                    className={`favorite-btn ${favorites.includes(product.id) ? 'active' : ''}`}
+                    onClick={() => toggleFavorite(product.id)}
+                  >
+                    <FaHeart />
+                  </Button>
+                </div>
                 <Card.Body className="d-flex flex-column">
                   <Card.Title>{product.name}</Card.Title>
-                  <Card.Text>${product.price}</Card.Text>
+                  <Card.Text className="product-price">${Number(product.price).toFixed(2)}</Card.Text>
                   <div className="mt-auto">
                     <Button 
-                      variant="primary" 
-                      className="me-2 mb-2" 
+                      variant="outline-primary" 
+                      className="w-100 mb-2" 
                       onClick={() => handleAddToCart(product)}
                     >
+                      <FaShoppingCart className="me-2" />
                       Añadir al carrito
                     </Button>
                     <Button 
-                      variant="success" 
+                      variant="primary" 
+                      className="w-100"
                       onClick={() => handleBuyNow(product)}
                     >
                       Comprar ahora
