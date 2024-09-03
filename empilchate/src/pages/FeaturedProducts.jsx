@@ -27,16 +27,18 @@ const FeaturedProducts = () => {
             <Row className="justify-content-center">
               {group.map((product) => (
                 <Col key={product.id} xs={12} sm={6} md={4} className="text-center mb-4">
-                  <div className="product-card">
-                    <div className="image-container">
-                      <img
-                        className="vertical-image"
-                        src={product.image}
-                        alt={product.name}
-                      />
+                  <Link to={`/product/${product.id}`} className="product-link">
+                    <div className="product-card">
+                      <div className="image-container">
+                        <img
+                          className="product-image"
+                          src={product.image}
+                          alt={product.name}
+                        />
+                      </div>
+                      <h5 className="product-name">{product.name}</h5>
                     </div>
-                    <h5>{product.name}</h5>
-                  </div>
+                  </Link>
                 </Col>
               ))}
             </Row>

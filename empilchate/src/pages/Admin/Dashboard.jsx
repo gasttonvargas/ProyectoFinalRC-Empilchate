@@ -1,20 +1,32 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import NavbarAdmin from '../../components/NavbarAdmin';
 
 const Dashboard = () => {
+  const [products, setProducts] = React.useState([]);
+
+  const handleAddProduct = (newProduct) => {
+    setProducts((prevProducts) => [...prevProducts, { ...newProduct, id: Date.now() }]);
+  };
+
+  const handleEditProduct = (updatedProduct) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) => (product.id === updatedProduct.id ? updatedProduct : product))
+    );
+  };
+
+  const handleDeleteProduct = (productId) => {
+    setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
+  };
+
   return (
-    <>
-      <NavbarAdmin />
-      <Container>
-        <Row className="mt-4">
-          <Col>
-            <h1>Bienvenido al Panel de Administración</h1>
-            <p>Aquí puedes gestionar productos y usuarios.</p>
-          </Col>
-        </Row>
-      </Container>
-    </>
+    <div>
+      <h1>Admin Dashboard</h1>
+      <ProductList
+        products={products}
+        onAdd={handleAddProduct}
+        onEdit={handleEditProduct}
+        onDelete={handleDeleteProduct}
+      />
+    </div>
   );
 };
 

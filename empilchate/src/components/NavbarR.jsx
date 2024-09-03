@@ -7,6 +7,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import LoginModal from '../pages/LoginModal';
 import RegisterModal from '../pages/RegisterModal';
+import { useCart } from '../contexts/CartContext'; 
+import { useFavorites } from '../contexts/FavoritesContext';
 import '../assets/NavbarR.css';
 import logo from '../assets/img/logo.png';
 
@@ -14,13 +16,19 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [favoritesCount, setFavoritesCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Obtener el conteo de artículos del carrito y favoritos desde los contextos
+  const { cart } = useCart();
+  const { favorites } = useFavorites();
+
+  // Contar artículos en el carrito y favoritos
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const favoritesCount = favorites.length;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -29,14 +37,11 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           const userData = userDoc.data();
-          setIsAdmin(userData?.role === 'admin');
+          const isAdmin = userData?.role === 'admin';
+          setIsAdmin(isAdmin);
           setUserName(userData?.firstName && userData?.lastName 
             ? `${userData.firstName} ${userData.lastName}`
             : userData?.firstName || userData?.lastName || '');
-          const cartItemCount = await getCartItemCount(currentUser.uid);
-          setCartCount(cartItemCount);
-          const favoritesItemCount = await getFavoritesCount(currentUser.uid);
-          setFavoritesCount(favoritesItemCount);
         } catch (error) {
           console.error("Error al obtener el documento del usuario:", error);
         }
@@ -44,8 +49,6 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
         setUser(null);
         setIsAdmin(false);
         setUserName('');
-        setCartCount(0);
-        setFavoritesCount(0);
       }
     });
 
@@ -63,7 +66,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
 
   const handleCartClick = () => {
     if (user) {
-      navigate('/cart'); // Cambiado de '/carrito' a '/cart'
+      navigate('/cart'); 
     } else {
       setShowCartModal(true);
     }
@@ -71,7 +74,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
 
   const handleFavoritesClick = () => {
     if (user) {
-      navigate('/favorites'); // Cambiado de '/favoritos' a '/favorites'
+      navigate('/favorites'); 
     } else {
       setShowLoginModal(true);
     }
@@ -79,9 +82,8 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Implementa la lógica de búsqueda aquí
     console.log('Búsqueda:', searchTerm);
-    // Ejemplo: navigate(`/search?q=${searchTerm}`);
+    // Implementar lógica de búsqueda aquí
   };
 
   const handleAdminClick = () => {
