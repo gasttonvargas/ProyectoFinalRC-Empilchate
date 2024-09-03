@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './contexts/CartContext';
+import { FavoritesProvider } from './contexts/FavoritesContext'; 
 import NavbarComponent from './components/NavbarR';
 import NavbarAdmin from './components/NavbarAdmin';
 import HomePage from './pages/HomePage';
@@ -29,6 +30,7 @@ function App() {
 
   return (
     <CartProvider>
+      <FavoritesProvider>
       <Router>
         <div className="App">
           {showAdminNav ? (
@@ -65,6 +67,7 @@ function App() {
           <Footer />
         </div>
       </Router>
+      </FavoritesProvider>
     </CartProvider>
   );
 }

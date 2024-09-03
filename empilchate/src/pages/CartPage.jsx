@@ -13,7 +13,7 @@ const CartPage = () => {
   const [cvv, setCvv] = useState('');
   const [address, setAddress] = useState('');
 
-  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((total, item) => total + (Number(item.price) || 0) * item.quantity, 0);
   const discount = 3.99; // Ejemplo de descuento
   const shippingFee = 4.99;
   const total = subtotal - discount + shippingFee;
@@ -47,7 +47,9 @@ const CartPage = () => {
                   <img src={product.image} alt={product.name} style={{ width: '80px', marginRight: '10px' }} />
                   <div className="flex-grow-1">
                     <h6 className="mb-0">{product.name}</h6>
-                    <span className="text-muted">${product.price.toFixed(2)}</span>
+                    <span className="text-muted">
+                      ${typeof product.price === 'number' ? product.price.toFixed(2) : 'Precio no disponible'}
+                    </span>
                   </div>
                   <div className="d-flex align-items-center">
                     <Button variant="outline-secondary" size="sm" onClick={() => handleQuantityChange(product, -1)}>

@@ -9,7 +9,6 @@ const ProductGrid = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 15; // 
 
-  // Simula una lista de productos (reemplaza esto con tus datos reales)
   const products = Array.from({ length: 100 }, (_, i) => ({
     id: i + 1,
     name: `Producto ${i + 1}`,
