@@ -3,17 +3,14 @@ import { Container, Row, Col, Card, Button, Form, ListGroup } from 'react-bootst
 import { FaMinus, FaPlus, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa';
 import { useCart } from '../contexts/CartContext';
 import '../assets/CartPage.css';
+import mercadopago from '../services/mercadopago'; 
 
 const CartPage = () => {
-  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCart();
   const [paymentMethod, setPaymentMethod] = useState('credit');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expirationDate, setExpirationDate] = useState('');
-  const [cvv, setCvv] = useState('');
   const [address, setAddress] = useState('');
 
-  const subtotal = cart.reduce((total, item) => total + (Number(item.price) || 0) * item.quantity, 0);
+  const subtotal = cart.reduce((total, item) => total + (parseFloat(item.price) || 0) * item.quantity, 0);
   const discount = 3.99; // Ejemplo de descuento
   const shippingFee = 4.99;
   const total = subtotal - discount + shippingFee;
@@ -27,9 +24,46 @@ const CartPage = () => {
     }
   };
 
-  const handlePayment = () => {
-    alert(`Pago realizado con éxito usando ${paymentMethod === 'credit' ? 'tarjeta de crédito' : 'efectivo'}`);
-    clearCart();
+  const handlePayment = async () => {
+    try {
+      const preference = {
+        items: cart.map(item => ({
+          title: item.name,
+          unit_price: parseFloat(item.price),
+          quantity: item.quantity,
+        })),
+        back_urls: {
+          success: "http://localhost:3000/success",
+          failure: "http://localhost:3000/failure",
+          pending: "http://localhost:3000/pending"
+        },
+        auto_return: "approved",
+      };
+
+      const mp = mercadopago; // Usa la instancia del SDK
+
+      mp.checkout({
+        preference: {
+          id: preference.id,
+        },
+        autoReturn: "approved",
+      }).then((response) => {
+        // Redirige al usuario al link de pago
+        window.location.href = response.body.init_point;
+      }).catch((error) => {
+        console.error("Error al crear el link de pago:", error);
+        alert("Hubo un error al procesar el pago. Por favor, intenta de nuevo.");
+      });
+
+    } catch (error) {
+      console.error("Error al crear el link de pago:", error);
+      alert("Hubo un error al procesar el pago. Por favor, intenta de nuevo.");
+    }
+  };
+
+  const formatPrice = (price) => {
+    const numPrice = parseFloat(price);
+    return isNaN(numPrice) ? 'Precio no disponible' : `$${numPrice.toFixed(2)}`;
   };
 
   return (
@@ -48,7 +82,7 @@ const CartPage = () => {
                   <div className="flex-grow-1">
                     <h6 className="mb-0">{product.name}</h6>
                     <span className="text-muted">
-                      ${typeof product.price === 'number' ? product.price.toFixed(2) : 'Precio no disponible'}
+                      {formatPrice(product.price)}
                     </span>
                   </div>
                   <div className="d-flex align-items-center">
@@ -73,55 +107,13 @@ const CartPage = () => {
               <Form>
                 <Form.Check
                   type="radio"
-                  label={<><FaCreditCard /> Tarjeta de Crédito</>}
+                  label={<><FaCreditCard /> Tarjeta de Crédito/Débito</>}
                   name="paymentMethod"
-                  id="credit"
-                  value="credit"
-                  checked={paymentMethod === 'credit'}
+                  id="card"
+                  value="card"
+                  checked={paymentMethod === 'card'}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
-                {paymentMethod === 'credit' && (
-                  <div className="mt-3">
-                    <Form.Group className="mb-3">
-                      <Form.Control
-                        type="text"
-                        placeholder="Número de tarjeta"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                      <Form.Control
-                        type="text"
-                        placeholder="Nombre en la tarjeta"
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Row>
-                      <Col>
-                        <Form.Group className="mb-3">
-                          <Form.Control
-                            type="text"
-                            placeholder="MM/AA"
-                            value={expirationDate}
-                            onChange={(e) => setExpirationDate(e.target.value)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group className="mb-3">
-                          <Form.Control
-                            type="text"
-                            placeholder="CVV"
-                            value={cvv}
-                            onChange={(e) => setCvv(e.target.value)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                  </div>
-                )}
                 <Form.Check
                   type="radio"
                   label={<><FaMoneyBillWave /> Efectivo</>}
@@ -161,24 +153,29 @@ const CartPage = () => {
               <ListGroup variant="flush">
                 <ListGroup.Item className="d-flex justify-content-between">
                   <span>Subtotal:</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </ListGroup.Item>
                 <ListGroup.Item className="d-flex justify-content-between">
                   <span>Descuento:</span>
-                  <span>${discount.toFixed(2)}</span>
+                  <span>{formatPrice(discount)}</span>
                 </ListGroup.Item>
                 <ListGroup.Item className="d-flex justify-content-between">
                   <span>Envío:</span>
-                  <span>${shippingFee.toFixed(2)}</span>
+                  <span>{formatPrice(shippingFee)}</span>
                 </ListGroup.Item>
                 <ListGroup.Item className="d-flex justify-content-between fw-bold">
                   <span>Total:</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatPrice(total)}</span>
                 </ListGroup.Item>
               </ListGroup>
             </Card.Body>
             <Card.Footer>
-              <Button variant="success" className="w-100" onClick={handlePayment}>
+              <Button 
+                variant="success" 
+                className="w-100" 
+                onClick={handlePayment}
+                disabled={!address || cart.length === 0} 
+              >
                 Realizar Pago
               </Button>
             </Card.Footer>

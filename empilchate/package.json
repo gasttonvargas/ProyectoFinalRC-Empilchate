@@ -9,6 +9,7 @@
     "dev": "vite"
   },
   "dependencies": {
+    "@mercadopago/sdk-react": "^0.0.19",
     "bootstrap": "^5.3.3",
     "firebase": "^9.6.0",
     "firebase-admin": "^12.4.0",
