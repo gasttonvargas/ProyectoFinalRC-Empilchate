@@ -54,7 +54,7 @@ const LoginModal = ({ show, handleClose }) => {
         </Form>
       </Modal.Body>
       <Modal.Footer className="login-modal-footer">
-        <Link to="/recuperarpass" className="forgot-password-link">¿Olvidaste tu contraseña?</Link>
+        <Link to="/recuperarpassword" className="forgot-password-link">¿Olvidaste tu contraseña?</Link>
       </Modal.Footer>
     </Modal>
   );

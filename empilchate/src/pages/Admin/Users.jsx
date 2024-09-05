@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import DashboardNavbar from '../../components/NavbarAdmin';
 import UserList from '../../components/dashboard/UserList';
-import UserForm from '../../components/dashboard/UserForm';
 import { getUsers, addUser, updateUser, deleteUser, getOnlineUsersCount } from '../../services/Users';
 const Users = () => {
   const [users, setUsers] = useState([]);

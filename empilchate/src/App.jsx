@@ -10,6 +10,8 @@ import ProductsPage from './pages/ProductsPage';
 import CartPage from './pages/CartPage';
 import FavoritesPage from './pages/FavoritesPage';
 import Footer from './components/Footer';
+import ProfilePage from './pages/ProfilePage';
+import RecuperarPass from './pages/RecuperarPass';
 
 // Importar componentes del dashboard
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -46,6 +48,8 @@ function App() {
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/recuperarpassword" element={<RecuperarPass />} />
 
             {/* Rutas de administrador */}
             <Route 
