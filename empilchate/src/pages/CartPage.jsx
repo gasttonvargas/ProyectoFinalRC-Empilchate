@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Form, ListGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa';
 import { useCart } from '../contexts/CartContext';
+import { createPreference } from '../services/mercadopago'; 
 import '../assets/CartPage.css';
-import mercadopago from '../services/mercadopago'; 
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -11,7 +11,7 @@ const CartPage = () => {
   const [address, setAddress] = useState('');
 
   const subtotal = cart.reduce((total, item) => total + (parseFloat(item.price) || 0) * item.quantity, 0);
-  const discount = 3.99; // Ejemplo de descuento
+  const discount = 3.99; 
   const shippingFee = 4.99;
   const total = subtotal - discount + shippingFee;
 
@@ -26,37 +26,16 @@ const CartPage = () => {
 
   const handlePayment = async () => {
     try {
-      const preference = {
-        items: cart.map(item => ({
-          title: item.name,
-          unit_price: parseFloat(item.price),
-          quantity: item.quantity,
-        })),
-        back_urls: {
-          success: "http://localhost:3000/success",
-          failure: "http://localhost:3000/failure",
-          pending: "http://localhost:3000/pending"
-        },
-        auto_return: "approved",
-      };
+      const items = cart.map(item => ({
+        title: item.name,
+        unit_price: parseFloat(item.price),
+        quantity: item.quantity,
+      }));
 
-      const mp = mercadopago; // Usa la instancia del SDK
-
-      mp.checkout({
-        preference: {
-          id: preference.id,
-        },
-        autoReturn: "approved",
-      }).then((response) => {
-        // Redirige al usuario al link de pago
-        window.location.href = response.body.init_point;
-      }).catch((error) => {
-        console.error("Error al crear el link de pago:", error);
-        alert("Hubo un error al procesar el pago. Por favor, intenta de nuevo.");
-      });
-
+      const preference = await createPreference(items);
+      window.location.href = preference.init_point; 
     } catch (error) {
-      console.error("Error al crear el link de pago:", error);
+      console.error("Error al procesar el pago:", error);
       alert("Hubo un error al procesar el pago. Por favor, intenta de nuevo.");
     }
   };
@@ -174,7 +153,7 @@ const CartPage = () => {
                 variant="success" 
                 className="w-100" 
                 onClick={handlePayment}
-                disabled={!address || cart.length === 0} 
+                disabled={!address || cart.length === 0}
               >
                 Realizar Pago
               </Button>
