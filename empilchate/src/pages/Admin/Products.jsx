@@ -194,6 +194,7 @@ const Products = () => {
                 value={currentProduct.name}
                 onChange={handleInputChange}
                 required
+                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -204,6 +205,7 @@ const Products = () => {
                 value={currentProduct.price}
                 onChange={handleInputChange}
                 required
+                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -214,6 +216,7 @@ const Products = () => {
                 value={currentProduct.image}
                 onChange={handleInputChange}
                 required
+                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -224,6 +227,7 @@ const Products = () => {
                 value={currentProduct.category}
                 onChange={handleInputChange}
                 required
+                className="white-input"
               >
                 <option value="">Seleccionar Categoría</option>
                 <option value="Buzos">Buzos</option>

@@ -1,0 +1,32 @@
+.advertisement {
+    width: 100%;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .advertisement h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .advertisement p {
+    font-size: 18px;
+  }
+  
+  .advertisement-button {
+    background-color: #721c24;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .advertisement-button:hover {
+    background-color: #5c1519;
+  }
+  

@@ -37,8 +37,5 @@ const CategoriesPage = () => {
   );
 };
 
-
-
 export { categories };
-
 export default CategoriesPage;

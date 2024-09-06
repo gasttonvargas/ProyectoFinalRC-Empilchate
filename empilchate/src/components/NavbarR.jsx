@@ -3,11 +3,12 @@ import { Navbar, Nav, Container, Badge, Dropdown, Modal, Button, Form, FormContr
 import { FaHome, FaShoppingCart, FaBars, FaUser, FaSearch, FaUserShield, FaHeart } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import LoginModal from '../pages/LoginModal';
 import RegisterModal from '../pages/RegisterModal';
 import { useCart } from '../contexts/CartContext'; 
+import { searchProducts } from '../services/searchService';
 import { useFavorites } from '../contexts/FavoritesContext';
 import '../assets/NavbarR.css';
 import logo from '../assets/img/logo.png';
@@ -20,13 +21,12 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
 
-  // Obtener el conteo de artículos del carrito y favoritos desde los contextos
   const { cart } = useCart();
   const { favorites } = useFavorites();
 
-  // Contar artículos en el carrito y favoritos
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const favoritesCount = favorites.length;
 
@@ -80,11 +80,21 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
     }
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    console.log('Búsqueda:', searchTerm);
-    // Implementar lógica de búsqueda aquí
+    try {
+      const results = await searchProducts(searchTerm);
+      if (results.length > 0) {
+        navigate('/search', { state: { results } });
+      } else {
+        navigate('/search', { state: { results: [] } });
+      }
+    } catch (error) {
+      console.error('Error durante la búsqueda:', error);
+      navigate('/search', { state: { results: [] } });
+    }
   };
+
 
   const handleAdminClick = () => {
     if (onSwitchToAdmin) {
