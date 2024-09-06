@@ -1,4 +1,4 @@
-import { db } from '../firebase'; // Asegúrate de que esta ruta sea correcta
+import { db } from '../firebase'; 
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export const getCartItemCount = async (userId) => {

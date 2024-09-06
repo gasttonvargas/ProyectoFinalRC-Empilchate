@@ -2,6 +2,7 @@ import React from 'react';
 import { Carousel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { categories } from './CategoriesPage';
+import '../assets/CategoriesCarousel.css'
 
 
 const CategoriesCarousel = () => {
@@ -12,7 +13,6 @@ const CategoriesCarousel = () => {
 
   return (
     <div className="categories-carousel">
-      <h2 className="text-center mb-4">Todas las Categorías</h2>
       <Carousel 
         controls={false}
         indicators={false}
@@ -24,19 +24,23 @@ const CategoriesCarousel = () => {
           <Carousel.Item key={index}>
             <div className="d-flex justify-content-around">
               {group.map((category) => (
-                <div key={category.id} style={{ width: '23%' }}>
-                  <Link to={`/category/${category.name.toLowerCase()}`}>
-                    <img
-                      className="d-block w-100"
-                      src={category.image}
-                      alt={category.name}
-                      style={{ objectFit: 'cover', height: '200px' }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/200x200?text=Imagen+no+disponible';
-                      }}
-                    />
-                    <p className="text-center mt-2">{category.name}</p>
+                <div key={category.id} className="category-item" style={{ width: '23%' }}>
+                  <Link to={`/category/${category.name.toLowerCase()}`} className="category-link">
+                    <div className="image-container">
+                      <img
+                        className="d-block w-100"
+                        src={category.image}
+                        alt={category.name}
+                        style={{ objectFit: 'cover', height: '200px' }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/200x200?text=Imagen+no+disponible';
+                        }}
+                      />
+                      <div className="category-overlay">
+                        <p className="category-name">{category.name}</p>
+                      </div>
+                    </div>
                   </Link>
                 </div>
               ))}

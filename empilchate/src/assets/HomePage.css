@@ -4,70 +4,102 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
-.home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+.home-page {
+  padding: 20px 0;
 }
 
-.section-title {
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 30px;
-  color: #ecf0f1;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+.home-page h1, .home-page h2 {
+  color: #ffffff;
+  font-weight: bold;
 }
 
-.carousel-container {
-  background-color: #34495e;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 40px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.product-card {
-  background-color: #2c3e50;
+.carousel {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-5px);
+.carousel-item {
+  height: 400px;
 }
 
-.product-image {
+.carousel-item img {
+  object-fit: cover;
+  height: 100%;
   width: 100%;
-  height: 200px;
+}
+
+.new-products-carousel .card {
+  height: 300px;
+}
+
+.new-products-carousel .card-img {
+  object-fit: cover;
+  height: 100%;
+}
+
+.new-products-carousel .card-img-overlay {
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.new-products-carousel .card-title, .new-products-carousel .card-text {
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.product-details {
-  padding: 15px;
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+.overlay-text {
+  background-color: rgba(0, 0, 0, 0.651);
+  padding: 20px;
+  border-radius: 10px;
 }
 
-.category-item {
-  background-color: #3498db;
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-  transition: background-color 0.3s ease;
+.video-overlay h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.category-item:hover {
-  background-color: #2980b9;
-}
+@media (max-width: 768px) {
+  .video-overlay h1 {
+    font-size: 1.5rem;
+  }
 
-.category-name {
-  color: #ecf0f1;
-  font-size: 1.1rem;
-  margin-top: 10px;
+  .advertisement {
+    display: none;
+  }
+
+  .carousel-item {
+    flex: 1 0 100%;
+  }
+
+  .carousel-item img {
+    height: auto;
+  }
 }

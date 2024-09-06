@@ -6,6 +6,14 @@
     border: none;
   }
 
+  .white-input {
+    color: rgba(255, 255, 255, 0.295);
+  }
+  
+  .white-input::placeholder {
+    color: rgba(255, 255, 255, 0.363);
+  }
+  
   
   .register-modal-header {
     border-bottom: 1px solid #444;

@@ -36,6 +36,7 @@ const LoginModal = ({ show, handleClose }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="white-input"
             />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -46,6 +47,7 @@ const LoginModal = ({ show, handleClose }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="white-input"
             />
           </Form.Group>
           <Button variant="primary" type="submit" className="w-100 login-button">
