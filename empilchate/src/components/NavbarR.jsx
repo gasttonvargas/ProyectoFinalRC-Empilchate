@@ -3,7 +3,7 @@ import { Navbar, Nav, Container, Badge, Dropdown, Modal, Button, Form, FormContr
 import { FaHome, FaShoppingCart, FaBars, FaUser, FaSearch, FaUserShield, FaHeart } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import LoginModal from '../pages/LoginModal';
 import RegisterModal from '../pages/RegisterModal';
@@ -21,7 +21,8 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState('');
   const navigate = useNavigate();
 
   const { cart } = useCart();
@@ -80,21 +81,25 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
     }
   };
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const handleSearch = async (event) => {
+    event.preventDefault();
+    setIsSearching(true);
+    setSearchError('');
     try {
       const results = await searchProducts(searchTerm);
-      if (results.length > 0) {
-        navigate('/search', { state: { results } });
+      console.log('Resultados enviados a la navegación:', results);
+      if (results.length === 0) {
+        setSearchError('No se encontraron resultados.');
       } else {
-        navigate('/search', { state: { results: [] } });
+        navigate('/search-results', { state: { results } });
       }
     } catch (error) {
       console.error('Error durante la búsqueda:', error);
-      navigate('/search', { state: { results: [] } });
+      setSearchError('Ocurrió un error durante la búsqueda. Por favor, intenta de nuevo.');
+    } finally {
+      setIsSearching(false);
     }
   };
-
 
   const handleAdminClick = () => {
     if (onSwitchToAdmin) {
@@ -127,9 +132,13 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
               className="mr-2" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              disabled={isSearching}
             />
-            <Button variant="outline-light" type="submit"><FaSearch /></Button>
+            <Button variant="outline-light" type="submit" disabled={isSearching}>
+              {isSearching ? 'Buscando...' : <FaSearch />}
+            </Button>
           </Form>
+          {searchError && <div className="text-danger">{searchError}</div>}
           
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           

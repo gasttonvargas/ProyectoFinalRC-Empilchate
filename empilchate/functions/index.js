@@ -1,19 +1,45 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const functions = require('firebase-functions');
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const axios = require('axios'); 
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+const app = express();
+app.use(cors({ origin: true }));
+app.use(bodyParser.json());
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+app.post('/create-preference', async (req, res) => {
+  const items = req.body.items;
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  try {
+    const preference = await createMercadoPagoPreference(items);
+    res.status(200).json(preference);
+  } catch (error) {
+    console.error('Error al crear la preferencia de pago:', error);
+    res.status(500).send('Error al crear la preferencia de pago');
+  }
+});
+
+exports.api = functions.https.onRequest(app);
+
+const createMercadoPagoPreference = async (items) => {
+  const accessToken = 'APP_USR-682251772192805-090221-46724c815036ab91ae090bd143675b52-265502444';
+  const url = 'https://api.mercadopago.com/checkout/preferences?access_token=' + accessToken;
+
+  try {
+    const response = await axios.post(url, {
+      items: items,
+      back_urls: {
+        success: 'https://tu-sitio.com/success',
+        failure: 'https://tu-sitio.com/failure',
+        pending: 'https://tu-sitio.com/pending'
+      },
+      auto_return: 'approved'
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error al interactuar con MercadoPago:', error);
+    throw new Error('Error al crear la preferencia de pago con MercadoPago');
+  }
+};

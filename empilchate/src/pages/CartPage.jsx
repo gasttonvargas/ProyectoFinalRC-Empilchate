@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Form, ListGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa';
 import { useCart } from '../contexts/CartContext';
-import { createPreference } from '../services/mercadopago'; 
+import { createPreference } from '../services/mercadopago';
 import '../assets/CartPage.css';
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [paymentMethod, setPaymentMethod] = useState('card');
   const [address, setAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const subtotal = cart.reduce((total, item) => total + (parseFloat(item.price) || 0) * item.quantity, 0);
-  const discount = 3.99; 
+  const discount = 3.99;
   const shippingFee = 4.99;
   const total = subtotal - discount + shippingFee;
 
@@ -25,7 +26,13 @@ const CartPage = () => {
   };
 
   const handlePayment = async () => {
+    setIsLoading(true);
     try {
+      if (paymentMethod === 'cash') {
+        window.location.href = '/404';
+        return;
+      }
+
       const items = cart.map(item => ({
         title: item.name,
         unit_price: parseFloat(item.price),
@@ -33,10 +40,12 @@ const CartPage = () => {
       }));
 
       const preference = await createPreference(items);
-      window.location.href = preference.init_point; 
+      window.location.href = preference.init_point;
     } catch (error) {
       console.error("Error al procesar el pago:", error);
       alert("Hubo un error al procesar el pago. Por favor, intenta de nuevo.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -153,9 +162,9 @@ const CartPage = () => {
                 variant="success" 
                 className="w-100" 
                 onClick={handlePayment}
-                disabled={!address || cart.length === 0}
+                disabled={!address || cart.length === 0 || isLoading}
               >
-                Realizar Pago
+                {isLoading ? 'Procesando...' : 'Pagar'}
               </Button>
             </Card.Footer>
           </Card>

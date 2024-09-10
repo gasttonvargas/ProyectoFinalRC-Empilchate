@@ -25,12 +25,25 @@
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/**",
+        "function": "api"
       }
     ]
   },
   "storage": {
     "rules": "storage.rules"
+  },
+
+  "emulators": {
+    "firestore": {
+      "host": "localhost",
+      "port": 8082
+    },
+    "functions": {
+      "port": 5001
+    },
+    "hosting": {
+      "port": 5000
+    }
   }
 }
