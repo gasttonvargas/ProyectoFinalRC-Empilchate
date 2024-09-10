@@ -1,0 +1,41 @@
+.error-container {
+    padding: 40px;
+    background: #ffffff77;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    color: black;
+}
+
+.error-icon {
+    font-size: 6rem;
+    color: #ff0000;
+    margin-bottom: 20px;
+}
+
+.display-1 {
+    font-size: 8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000000;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin: 10px 0;
+    color: #000000;
+}
+
+p {
+    font-size: 1.25rem;
+    color: #000000;
+}
+
+button {
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3; 
+    transform: scale(1.05); 
+  }

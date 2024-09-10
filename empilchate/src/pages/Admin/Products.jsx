@@ -3,7 +3,7 @@ import { Table, Button, Form, Modal, Image, Spinner, Toast, ToastContainer } fro
 import { FaEdit, FaTrash, FaPlus, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-
+import '../../assets/ProductsAdmin.css'
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -117,7 +117,7 @@ const Products = () => {
   };
 
   return (
-    <div>
+    <div className="products-management">
       <h1>Gestión de Productos</h1>
       <div className="mb-3">
         <Button variant="primary" onClick={() => handleShowModal()}>
@@ -136,29 +136,29 @@ const Products = () => {
       </div>
 
       <div className="table-responsive">
-        <Table striped bordered hover>
+        <Table striped bordered hover className="products-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th className="d-none d-md-table-cell">ID</th>
               <th>Imagen</th>
               <th>Nombre</th>
               <th>Precio</th>
               <th>Categoría</th>
-              <th>Estado</th>
+              <th className="d-none d-md-table-cell">Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
               <tr key={product.id}>
-                <td>{product.id}</td>
+                <td className="d-none d-md-table-cell">{product.id}</td>
                 <td>
                   <Image src={product.image} alt={product.name} thumbnail style={{ maxWidth: '100px' }} />
                 </td>
                 <td>{product.name}</td>
                 <td>${product.price}</td>
                 <td>{product.category}</td>
-                <td>{product.isPublished ? 'Publicado' : 'No publicado'}</td>
+                <td className="d-none d-md-table-cell">{product.isPublished ? 'Publicado' : 'No publicado'}</td>
                 <td>
                   <Button variant="info" size="sm" onClick={() => handleShowModal(product)}>
                     <FaEdit /> Editar
@@ -194,7 +194,6 @@ const Products = () => {
                 value={currentProduct.name}
                 onChange={handleInputChange}
                 required
-                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -205,7 +204,6 @@ const Products = () => {
                 value={currentProduct.price}
                 onChange={handleInputChange}
                 required
-                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -216,7 +214,6 @@ const Products = () => {
                 value={currentProduct.image}
                 onChange={handleInputChange}
                 required
-                className="white-input"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -227,7 +224,6 @@ const Products = () => {
                 value={currentProduct.category}
                 onChange={handleInputChange}
                 required
-                className="white-input"
               >
                 <option value="">Seleccionar Categoría</option>
                 <option value="Buzos">Buzos</option>

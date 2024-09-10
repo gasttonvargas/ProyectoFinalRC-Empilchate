@@ -14,13 +14,14 @@ import ProfilePage from './pages/ProfilePage';
 import RecuperarPass from './pages/RecuperarPass';
 import AboutPage from './pages/AboutPage';
 import SearchResults from './pages/SearchResults';
-
+import Error404 from './pages/Error404';
 
 // Importar componentes del dashboard
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import Dashboard from './pages/Admin/Dashboard';
 import Products from './pages/Admin/Products';
 import Users from './pages/Admin/Users';
+
 
 function App() {
   const [showAdminNav, setShowAdminNav] = useState(false);
@@ -51,7 +52,6 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/search-results" element={<SearchResults />} />
 
-
               {/* Rutas de administrador */}
               <Route 
                 path="/admin-dashboard/*" 
@@ -68,6 +68,9 @@ function App() {
                   )
                 } 
               />
+
+              {/* Ruta para manejar el error 404 */}
+              <Route path="*" element={<Error404 />} />
             </Routes>
             <Footer />
           </div>
