@@ -125,15 +125,14 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
             <img src={logo} alt="Logo" className="navbar-logo" />
           </Navbar.Brand>
           
-          <Form className="d-flex d-lg-none mx-2 flex-grow-1" onSubmit={handleSearch}>
+          <Form className="d-flex d-lg-none mx-2 search-form" onSubmit={handleSearch}>
             <FormControl 
               type="search" 
               placeholder="Buscar" 
-              className="mr-2" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={isSearching}
-            />
+          />
             <Button variant="outline-light" type="submit" disabled={isSearching}>
               {isSearching ? 'Buscando...' : <FaSearch />}
             </Button>
@@ -172,7 +171,7 @@ const NavbarComponent = ({ onSwitchToAdmin }) => {
               </Nav.Link>
             </Nav>
             
-            <div className="d-flex align-items-center">
+            <div className="admin-button-container d-flex align-items-center">
               {isAdmin && (
                 <Button 
                   variant="warning" 

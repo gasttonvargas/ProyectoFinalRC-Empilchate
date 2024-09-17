@@ -14,7 +14,7 @@ const AboutPage = () => {
             src={logo}  
             fluid 
             rounded 
-            className="mb-4 d-block mx-auto"
+            className="about-us-logo mb-4 d-block mx-auto"
             alt="Nuestra historia"
           />
           <p className="lead text-center mb-4">
